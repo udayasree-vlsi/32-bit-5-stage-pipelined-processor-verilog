@@ -80,9 +80,7 @@ Write Back
 
 # Processor Block Diagram
 
-<p align="center">
-  <img src="Architecture/Pipeline_Architecture.png" width="100%">
-</p>
+<p align="center">   <img src="Processor_Architecture.png" width="100%"> </p>
 
 The architecture contains:
 
@@ -206,7 +204,7 @@ The Hazard Detection Unit identifies load-use hazards that cannot be resolved th
 # RTL Schematic
 
 <p align="center">
-  <img src="RTL_Schematic/RTL_View.png" width="100%">
+  <img src="Pipeline_Processor_RTL.png" width="100%">
 </p>
 
 RTL verification confirms successful integration of all pipeline stages and supporting modules.
@@ -232,23 +230,17 @@ Behavioral simulation was performed in Xilinx Vivado to validate processor funct
 
 ### Example Simulation Waveforms
 
-<p align="center">
-  <img src="Simulation_Results/Pipeline_Waveform_1.png" width="100%">
-</p>
+<p align="center">   <img src="Pipeline_Processor_Waveform_1.png" width="100%"> </p>
 
-<p align="center">
-  <img src="Simulation_Results/Pipeline_Waveform_2.png" width="100%">
-</p>
+<p align="center">   <img src="Simulation_Results/Pipeline_Processor_Waveform_2.png" width="100%"> </p>
 
-<p align="center">
-  <img src="Simulation_Results/Pipeline_Waveform_3.png" width="100%">
-</p>
+<p align="center">   <img src="Simulation_Results/Pipeline_Processor_Waveform_3.png" width="100%"> </p>
 
 ### Hazard Detection & Forwarding Verification
 
-<p align="center">
-  <img src="Simulation_Results/Hazard_Forwarding_Verification.png" width="100%">
-</p>
+<p align="center">   <img src="Hazard_Detection_Waveform.png" width="100%"> </p>
+
+<p align="center"> <img src="Forwarding_Unit_Waveform.png" width="100%"> </p>
 
 Simulation confirms correct forwarding paths and hazard resolution mechanisms.
 

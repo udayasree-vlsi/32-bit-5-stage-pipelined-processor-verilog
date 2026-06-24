@@ -2,11 +2,11 @@
 
 ## Overview
 
-This project presents the design, implementation, and verification of a **32-Bit 5-Stage Pipelined Processor** developed using **Verilog HDL**. The processor improves instruction throughput by overlapping instruction execution across multiple stages, enabling higher performance compared to a traditional single-cycle architecture.
+This project presents the design, implementation, and verification of a **32-Bit 5-Stage Pipelined Processor** using **Verilog HDL**. The processor improves instruction throughput by dividing instruction execution into five stages and executing multiple instructions concurrently.
 
-The design incorporates essential pipelining techniques including **pipeline registers**, **data forwarding**, **hazard detection**, and **branch handling**, ensuring correct execution while minimizing performance penalties caused by data and control hazards.
+The design incorporates **pipeline registers**, **forwarding logic**, **hazard detection**, and **branch handling** mechanisms to ensure correct and efficient instruction execution while minimizing pipeline stalls.
 
-The processor was designed, simulated, and verified using **Xilinx Vivado Design Suite**.
+The processor was developed and verified using **Xilinx Vivado Design Suite**.
 
 ---
 
@@ -14,119 +14,132 @@ The processor was designed, simulated, and verified using **Xilinx Vivado Design
 
 * 32-Bit Processor Architecture
 * 5-Stage Instruction Pipeline
-* Modular Verilog HDL Design
-* Pipeline Register Implementation
+* Verilog HDL Implementation
+* Pipeline Registers (IF/ID, ID/EX, EX/MEM, MEM/WB)
 * Forwarding Unit for Data Hazard Resolution
-* Hazard Detection Unit with Stall Generation
-* Branch Control and Branch Comparator Logic
-* Register File (32 × 32-bit)
+* Hazard Detection Unit for Stall Generation
+* Branch Control and Branch Comparator
+* Register File (32 Registers)
 * Arithmetic Logic Unit (ALU)
 * Instruction Memory
 * Data Memory
 * RTL Schematic Generation
 * Behavioral Simulation and Verification
-* Scalable Architecture for Future RISC-V Extension
+* Modular and Scalable Design
 
 ---
 
 ## Pipeline Architecture
 
-The processor follows the classic 5-stage pipelined datapath:
+The processor executes instructions through the following pipeline stages:
 
-```text
-Instruction Fetch (IF)
-        │
-        ▼
-Instruction Decode (ID)
-        │
-        ▼
-Execute (EX)
-        │
-        ▼
-Memory Access (MEM)
-        │
-        ▼
-Write Back (WB)
-```
-
-### IF – Instruction Fetch
+### Instruction Fetch (IF)
 
 * Fetches instructions from Instruction Memory.
 * Updates Program Counter (PC).
-* Passes fetched instruction to IF/ID pipeline register.
+* Computes PC + 4.
 
-### ID – Instruction Decode
+### Instruction Decode (ID)
 
 * Decodes instruction fields.
-* Reads source operands from Register File.
-* Generates processor control signals.
-* Sign-extends immediate values.
+* Reads operands from Register File.
+* Generates control signals.
+* Performs immediate value generation.
 
-### EX – Execute
+### Execute (EX)
 
 * Performs arithmetic and logical operations.
-* Calculates branch targets.
-* Executes forwarding logic to resolve data hazards.
+* Executes branch comparison.
+* Implements forwarding logic.
+* Generates ALU results.
 
-### MEM – Memory Access
+### Memory Access (MEM)
 
-* Performs memory read and write operations.
-* Handles branch decision processing.
+* Executes memory read and write operations.
+* Processes branch outcomes.
 
-### WB – Write Back
+### Write Back (WB)
 
-* Writes ALU or memory results back into the Register File.
+* Writes ALU or memory results back to the Register File.
+
+---
+
+## Processor Block Diagram
+
+```text
+        ┌──────────┐
+        │   IF     │
+        │ Fetch    │
+        └────┬─────┘
+             │
+             ▼
+        ┌──────────┐
+        │   ID     │
+        │ Decode   │
+        └────┬─────┘
+             │
+             ▼
+        ┌──────────┐
+        │   EX     │
+        │ Execute  │
+        └────┬─────┘
+             │
+             ▼
+        ┌──────────┐
+        │   MEM    │
+        │ Memory   │
+        └────┬─────┘
+             │
+             ▼
+        ┌──────────┐
+        │   WB     │
+        │WriteBack │
+        └──────────┘
+
+      ↑ Forwarding Unit
+      ↑ Hazard Detection Unit
+```
 
 ---
 
 ## Implemented Modules
 
-### Core Datapath Modules
+### Core Processor Modules
 
-| Module               | Description           |
-| -------------------- | --------------------- |
-| PC.v                 | Program Counter       |
-| Instruction_Memory.v | Instruction Storage   |
-| register_file.v      | Register File         |
-| control_unit.v       | Main Control Unit     |
-| ALU_Control.v        | ALU Operation Decoder |
-| aluu.v               | Arithmetic Logic Unit |
-| DataMemory.v         | Data Memory           |
+* PC.v
+* Instruction_Memory.v
+* register_file.v
+* control_unit.v
+* ALU_Control.v
+* aluu.v
+* DataMemory.v
 
 ### Pipeline Registers
 
-| Module   | Purpose           |
-| -------- | ----------------- |
-| IF_ID.v  | IF → ID Register  |
-| ID_EX.v  | ID → EX Register  |
-| EX_MEM.v | EX → MEM Register |
-| MEM_WB.v | MEM → WB Register |
+* IF_ID.v
+* ID_EX.v
+* EX_MEM.v
+* MEM_WB.v
 
-### Hazard Management
+### Hazard Handling Modules
 
-| Module             | Purpose                   |
-| ------------------ | ------------------------- |
-| ForwardingUnit.v   | Data Forwarding           |
-| Hazard_Detection.v | Load-Use Hazard Detection |
+* ForwardingUnit.v
+* Hazard_Detection.v
 
-### Branch Handling
+### Branch Handling Modules
 
-| Module              | Purpose               |
-| ------------------- | --------------------- |
-| BranchControl.v     | Branch Decision Logic |
-| Branch_Comparator.v | Operand Comparison    |
+* BranchControl.v
+* Branch_Comparator.v
 
-### Top-Level Integration
+### Top-Level Module
 
-| Module               | Purpose                        |
-| -------------------- | ------------------------------ |
-| Pipeline_Processor.v | Complete Processor Integration |
+* Pipeline_Processor.v
 
 ---
 
 ## Supported Instructions
 
-### Arithmetic & Logical Operations
+### Arithmetic Instructions
 
 * ADD
 * SUB
@@ -134,88 +147,49 @@ Write Back (WB)
 * OR
 * XOR
 
-### Memory Operations
+### Memory Instructions
 
 * LOAD
 * STORE
 
-### Control Operations
+### Control Instructions
 
-* Branch Instructions
+* Branch Operations
 
 ---
 
-## Hazard Resolution Techniques
+## Hazard Handling
 
 ### Forwarding Unit
 
-The forwarding unit minimizes pipeline stalls by forwarding computed results from later pipeline stages directly to the Execute stage.
+The Forwarding Unit resolves data hazards by forwarding results directly from later pipeline stages to the Execute stage without waiting for write-back.
 
-**Benefits:**
+Benefits:
 
-* Reduces data dependency delays
-* Improves instruction throughput
-* Minimizes unnecessary stalls
+* Reduces pipeline stalls
+* Improves throughput
+* Maintains execution correctness
 
 ### Hazard Detection Unit
 
-Detects load-use hazards and inserts pipeline stalls when forwarding alone cannot resolve dependencies.
+The Hazard Detection Unit identifies load-use hazards and inserts stalls when forwarding alone cannot resolve dependencies.
 
-**Functions:**
+Functions:
 
-* Hazard identification
-* Stall generation
-* Pipeline synchronization
-
-### Branch Handling
-
-The processor includes branch comparison and control logic to maintain correct program execution flow during branch instructions.
+* Detects data hazards
+* Generates stall signals
+* Controls pipeline execution
 
 ---
 
-## RTL Architecture
+## Branch Handling
 
-The complete processor RTL architecture was generated and verified using Vivado RTL Analysis.
+The processor includes:
 
-**Architecture Diagram:**
+* Branch Comparator
+* Branch Control Logic
 
-`Architecture/Pipeline_Architecture.png`
-
----
-
-## Simulation & Verification
-
-Behavioral simulation was performed using Vivado Simulator.
-
-### Verified Functionalities
-
-* Instruction Fetch Operation
-* Instruction Decode Logic
-* ALU Computation
-* Register Read/Write Operations
-* Memory Read/Write Access
-* Pipeline Register Operation
-* Data Forwarding
-* Hazard Detection
-* Pipeline Stalling
-* Branch Execution
-* Write-Back Functionality
-
-### Simulation Results
-
-Simulation waveforms demonstrate:
-
-* Correct pipelined instruction execution
-* Proper forwarding behavior
-* Successful hazard resolution
-* Correct branch handling
-* Accurate memory operations
-
-Simulation screenshots are available in:
-
-```text
-Simulation_Results/
-```
+These modules ensure correct branch execution and maintain proper program flow within the pipeline.
 
 ---
 
@@ -254,10 +228,75 @@ Simulation_Results/
 ├── Simulation_Results/
 │   ├── Pipeline_Waveform_1.png
 │   ├── Pipeline_Waveform_2.png
-│   └── Pipeline_Waveform_3.png
+│   ├── Pipeline_Waveform_3.png
+│   ├── Forwarding_Unit_Result.png
+│   └── Hazard_Detection_Result.png
 │
 └── README.md
 ```
+
+---
+
+## RTL Architecture
+
+Insert RTL schematic generated from Vivado here:
+
+```text
+Architecture/RTL_Schematic.png
+```
+
+---
+
+## Simulation Results
+
+The processor was verified using behavioral simulation in Xilinx Vivado.
+
+### Verification Includes
+
+* Instruction Fetch
+* Instruction Decode
+* ALU Operations
+* Register Read/Write
+* Memory Read/Write
+* Pipeline Register Operation
+* Forwarding Logic
+* Hazard Detection
+* Branch Handling
+* Complete Processor Execution
+
+### Sample Waveforms
+
+* Pipeline_Waveform_1.png
+* Pipeline_Waveform_2.png
+* Pipeline_Waveform_3.png
+
+### Hazard Detection Verification
+
+Demonstrates:
+
+* Load-use hazard detection
+* Stall generation
+* Correct pipeline behavior
+
+### Forwarding Verification
+
+Demonstrates:
+
+* EX-to-EX forwarding
+* MEM-to-EX forwarding
+* Reduced pipeline stalls
+
+---
+
+## How to Run
+
+1. Open **Xilinx Vivado**.
+2. Create a new Verilog project.
+3. Add all files from **Source_Code/**.
+4. Add testbench files from **Testbench/**.
+5. Set **Pipeline_Processor_tb.v** as the top simulation module.
+6. Run **Behavioral Simulation**.
+7. Observe waveform outputs and verify processor functionality.
 
 ---
 
@@ -267,38 +306,38 @@ Simulation_Results/
 * Xilinx Vivado Design Suite
 * Vivado Simulator
 * RTL Schematic Viewer
-* Digital Logic Design
 * Computer Architecture
-* Pipeline Processor Design
+* Digital Logic Design
 
 ---
 
 ## Learning Outcomes
 
-This project provided hands-on experience in:
+Through this project, the following concepts were implemented and verified:
 
-* Processor Datapath Design
-* Pipeline Architecture
-* Pipeline Register Design
+* Pipelined Processor Design
+* Pipeline Register Implementation
 * Data Hazard Resolution
-* Forwarding Logic Implementation
+* Forwarding Techniques
 * Hazard Detection Mechanisms
-* Branch Control Techniques
-* RTL Design and Verification
-* Functional Simulation and Debugging
-* Computer Architecture Fundamentals
+* Branch Handling
+* Instruction-Level Parallelism
+* RTL Design Methodology
+* Functional Verification
+* Verilog HDL Development
 
 ---
 
 ## Future Enhancements
 
-* Full RISC-V ISA Implementation
+* Complete RISC-V ISA Support
 * Branch Prediction Unit
 * Cache Memory Integration
-* Dynamic Hazard Resolution
+* Exception Handling
 * Out-of-Order Execution
-* Superscalar Pipeline Design
-* FPGA Deployment and Validation
+* Superscalar Architecture
+* FPGA Deployment
+* Performance Analysis Metrics
 
 ---
 
@@ -319,12 +358,13 @@ JNTUA College of Engineering, Ananthapuramu
 
 ✅ Completed
 ✅ Successfully Simulated
-✅ RTL Verified
+✅ RTL Generated
+✅ Pipeline Verified
 ✅ Hazard Detection Verified
-✅ Forwarding Unit Verified
+✅ Forwarding Verified
 ✅ Branch Handling Verified
 ✅ Uploaded to GitHub
 
 ### Next Project
 
-🚀 **32-Bit 5-Stage Pipelined RISC-V Processor**
+🚀 **32-Bit 5-Stage Pipelined RISC-V Processor with Branch Prediction**
